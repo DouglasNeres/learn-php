@@ -15,6 +15,7 @@ $media =($nota1+$nota2)/2;
 echo '<br>';
 echo $media >= 6? "Sim, Aprovado.":"Sim, Reprovado.";
 echo '<br>';
+
 //Questão 2
 //Pegar um valor na variável e identificar se é ímpar ou par.
 
