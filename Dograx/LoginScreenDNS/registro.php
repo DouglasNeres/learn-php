@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 mysqli_stmt_store_result($stmt);
                 if (mysqli_stmt_num_rows($stmt) == 1) {
                     $username_err = "Este usuário já existe";}
-            } else {
+            } else {http://localhost/Dograx/LoginScreenDNS/registro.php
                 $username = trim($_POST["username"]);
             }
         }else {
@@ -29,6 +29,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         mysqli_stmt_close($stmt);
     }
+
+    if (empty(trim($_POST["password"]))) {
+        $password_err = "Por favor preencha com uma senha";
+    } elseif(strlen(trim($_POST["password"])) < 6){
+        $password_err = "A senha deve ter no mínimo 6 caracteres";
+    }else {
+        $password = trim($_POST["password"]);
+    }
+
 }
 ?>
 
