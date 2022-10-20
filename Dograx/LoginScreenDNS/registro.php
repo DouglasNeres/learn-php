@@ -1,5 +1,6 @@
 <?php
 //Incluindo arquivo de conexão
+//Olá, Douglas :) Tomaram meu PC, então estou aqui no seu, blz?
 require_once "conexao.php";
 $username = $password = $confirmpassword = "";
 $username_err = $password_err = $confirmpassword_err = "";
@@ -8,10 +9,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if(empty(trim($_POST["username"]))){
         $username_err = "Por favor Preencha o campo";
     } elseif(!preg_match('/^[a-zA-Z0-9_]+$/', trim($_POST["username"]))){
-        $username_err = "Usuário só pode conter letras, números e o anderline";
+        $username_err = "Usuário só pode conter letras, números e o underline";
     } else{
         $sql = "SELECT id FROM users WHERE username = ?";
-
+        
         if ($stmt = mysqli_prepare($conexao, $sql)) {
             mysqli_stmt_bind_param($stmt, "s", $param_username);
 
@@ -37,11 +38,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }else {
         $password = trim($_POST["password"]);
     }
+if(empty(trim($_POST["password"])))
+  $password_err = "Por favor digite uma senha!";
+} elseif (strlen(trim($_POST["password"])) < 6) {
+    $password_err = "A senha  deve ter pelo menos 6 caracteres"; 
+} else {
+    $password = trim($_POST["password"]);
 
-}
+}    if(empty(trim($_POST["confirm_password"]))){
+        $confirmpassword_err = "Por favor confirme a senha!";
+    }else{
+        $confirmpassword = trim($_POST["confirm_password"]);
+        if (empty($password_err) && ($password != $confirmpassword)) {
+            $confirmpassword_err = "Senha é Diferente";
+        }
+    }
+
+    if (empty($username_err) && empty($password_err) && empty($confirmpassword_err)) {
+        $sql = "INSERT INTO users (username, password) VALUES (?,?)";
+
+        if ($stmt = mysqli_prepare($conexao, $sql)) {
+            mysqli_stmt_bind_param($stmt,"ss", $param_username, $param_password);
+
+            $param_username = $username;
+            $param_password = password_hash($password, PASSWORD_DEFAULT);
+
+            if (mysqli_stmt_execute($stmt)) {
+                header("location: telalogin.php");
+            }else {
+                echo "Oops! Algo de errado.. tente novamente." ;
+            }
+
+            mysqli_stmt_close($stmt);
+        }
+        mysqli_close($conexao);
+    }
+    
+
 ?>
 
 <!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Login</title>
@@ -77,13 +114,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>    
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" class="form-control" value="">
-                <span class="invalid-feedback"></span>
+                <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $password; ?>">
+                <span class="invalid-feedback"><?php echo $password_err; ?></span>
             </div>
             <div class="form-group">
                 <label>Confirm Password</label>
-                <input type="password" name="confirm_password" class="form-control " value="">
-                <span class="invalid-feedback"></span>
+                <input type="password" name="confirm_password" class="form-control <?php echo (!empty($confirmpassword_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $confirmpassword;?>">
+                <span class="invalid-feedback"><?php echo $confirmpassword_err; ?></span>
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
@@ -91,3 +128,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <p>Already have an account? <a href="telalogin.php">Login here</a>.</p>
         </form>
+
+    </body>
+</html>    
